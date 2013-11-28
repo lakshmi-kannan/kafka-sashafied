@@ -98,6 +98,26 @@ object KafkaBuild extends Build {
        </dependencies>
   )
 
+  val restSettings = Seq(
+    javacOptions ++= Seq("-Xlint:deprecation"),
+    libraryDependencies ++= Seq(
+      "org.eclipse.jetty" % "jetty-server" % "8.0.4.v20111024",
+      "org.eclipse.jetty" % "jetty-servlet" % "8.0.4.v20111024"
+    ),
+    ivyXML := 
+       <dependencies>
+        <exclude module="javax"/>
+        <exclude module="jmxri"/>
+        <exclude module="jmxtools"/>
+        <exclude module="mail"/>
+        <exclude module="jms"/>
+         <dependency org="org.eclipse.jetty" name="jetty-server" rev="8.0.4.v20111024">
+         </dependency>
+         <dependency org="org.eclipse.jetty" name="jetty-servlet" rev="8.0.4.v20111024">
+         </dependency>
+       </dependencies>
+  )
+
 
   val runRat = TaskKey[Unit]("run-rat-task", "Runs Apache rat on Kafka")
   val runRatTask = runRat := {
@@ -106,6 +126,18 @@ object KafkaBuild extends Build {
 
   val release = TaskKey[Unit]("release", "Creates a deployable release directory file with dependencies, config, and scripts.")
   val releaseTask = release <<= ( packageBin in (core, Compile), dependencyClasspath in (core, Runtime), exportedProducts in Compile,
+    target, releaseName in core ) map { (packageBin, deps, products, target, releaseName) =>
+      val jarFiles = deps.files.filter(f => !products.files.contains(f) && f.getName.endsWith(".jar"))
+      val destination = target / "RELEASE" / releaseName
+      IO.copyFile(packageBin, destination / packageBin.getName)
+      IO.copy(jarFiles.map { f => (f, destination / "libs" / f.getName) })
+      IO.copyDirectory(file("config"), destination / "config")
+      IO.copyDirectory(file("bin"), destination / "bin")
+      for {file <- (destination / "bin").listFiles} { file.setExecutable(true, true) }
+  }
+
+  val releaseRest = TaskKey[Unit]("release-rest", "Creates a deployable release directory file with dependencies, config, and scripts.")
+  val releaseRestTask = releaseRest <<= ( packageBin in (rest, Compile), dependencyClasspath in (rest, Runtime), exportedProducts in Compile,
     target, releaseName in core ) map { (packageBin, deps, products, target, releaseName) =>
       val jarFiles = deps.files.filter(f => !products.files.contains(f) && f.getName.endsWith(".jar"))
       val destination = target / "RELEASE" / releaseName
@@ -132,7 +164,7 @@ object KafkaBuild extends Build {
   }
 
   lazy val kafka    = Project(id = "Kafka", base = file(".")).aggregate(core, examples, contrib, perf).settings((commonSettings ++
-    runRatTask ++ releaseTask ++ releaseZipTask ++ releaseTarTask): _*)
+    runRatTask ++ releaseTask ++ releaseZipTask ++ releaseTarTask ++ releaseRestTask): _*)
   lazy val core     = Project(id = "core", base = file("core")).settings(commonSettings: _*)
   lazy val examples = Project(id = "java-examples", base = file("examples")).settings(commonSettings :_*) dependsOn (core)
   lazy val perf     = Project(id = "perf", base = file("perf")).settings((Seq(name := "kafka-perf") ++ commonSettings):_*) dependsOn (core)
@@ -141,4 +173,5 @@ object KafkaBuild extends Build {
   lazy val hadoopProducer = Project(id = "hadoop-producer", base = file("contrib/hadoop-producer")).settings(hadoopSettings ++ commonSettings: _*) dependsOn (core)
   lazy val hadoopConsumer = Project(id = "hadoop-consumer", base = file("contrib/hadoop-consumer")).settings(hadoopSettings ++ commonSettings: _*) dependsOn (core)
 
+  lazy val rest         = Project(id = "rest", base = file("contrib/rest")).settings(commonSettings ++ restSettings: _*) dependsOn (core)
 }
