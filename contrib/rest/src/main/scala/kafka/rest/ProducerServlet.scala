@@ -52,11 +52,7 @@ class ProducerServlet(brokerList:String) extends HttpServlet
 
     logger.warn("Received post request to topic: %s, body: '%s'".format(topic, body))
 
-    for (part <- request.getParts()) {
-      logger.warn("Got part: %s".format(part.getContentType()))
-    }
-
-    val data = new KeyedMessage[String, String](topic, "key", "Hello world")
+    val data = new KeyedMessage[String, String](topic, "key", body)
     producer.send(data)
 
     response.setContentType("application/json")
