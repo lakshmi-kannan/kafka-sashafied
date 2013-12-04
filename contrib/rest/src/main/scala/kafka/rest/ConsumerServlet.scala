@@ -17,12 +17,15 @@ import kafka.consumer._
 import kafka.message._
 import kafka.serializer._
 
-class ConsumerServlet(topic:String, groupId:String, zookeeperUrl:String) extends HttpServlet
-{
-  val consumer = Consumer.create(getConsumerConfig())
-  val logger = Logger.getLogger("kafka.rest.consumer")
-  val stream  = consumer.createMessageStreamsByFilter(new Whitelist(topic), 1, new DefaultDecoder(), new DefaultDecoder()).get(0)
+import org.bson.BasicBSONDecoder
+import com.mongodb.util.JSON
 
+class ConsumerServlet(topic:String, properties: Properties) extends HttpServlet
+{
+  val consumer = Consumer.create(new ConsumerConfig(properties))
+  val logger = Logger.getLogger("kafka.rest.consumer")
+  val stream  = consumer.createMessageStreamsByFilter(
+    new Whitelist(topic), 1, new StringDecoder(), new DefaultDecoder()).get(0)
 
   override def doPost(request:HttpServletRequest, response:HttpServletResponse)
   {
@@ -41,30 +44,15 @@ class ConsumerServlet(topic:String, groupId:String, zookeeperUrl:String) extends
     this.synchronized {
       logger.info("Initiated get")
       for (item <- stream) {
-        var key = new String(item.key)
-        var message = new String(item.message)
+        var key = new String(if (item.key == null) "" else item.key)
+        var message = new BasicBSONDecoder().readObject(item.message)
+
         logger.warn("Hi, I have just got a message: %s %s".format(key, message))
         response.setContentType("application/json")
         response.setStatus(HttpServletResponse.SC_OK)
-        response.getWriter().println("{\"" +key+ "\": \""+  message  +"\"}")
+        response.getWriter().println(JSON.serialize(message))
         return
       }
     }
-  }
-
-  def getConsumerConfig():ConsumerConfig = {
-    val props = new Properties();
-    props.put("zookeeper.connect", zookeeperUrl)
-    props.put("group.id", groupId)
-    props.put("consumer.timeout.ms", "5000")
-
-    props.put("zookeeper.session.timeout.ms", "400")
-    props.put("zookeeper.sync.time.ms", "200")
-
-    props.put("auto.commit.enable", "false")
-    props.put("auto.commit.interval.ms", "1000")
-    props.put("auto.offset.reset", "largest")
-
-    return new ConsumerConfig(props)
   }
 }

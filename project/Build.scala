@@ -102,7 +102,8 @@ object KafkaBuild extends Build {
     javacOptions ++= Seq("-Xlint:deprecation"),
     libraryDependencies ++= Seq(
       "org.eclipse.jetty" % "jetty-server" % "8.0.4.v20111024",
-      "org.eclipse.jetty" % "jetty-servlet" % "8.0.4.v20111024"
+      "org.eclipse.jetty" % "jetty-servlet" % "8.0.4.v20111024",
+      "org.mongodb" % "mongo-java-driver" % "2.11.3"
     ),
     ivyXML := 
        <dependencies>
@@ -114,6 +115,8 @@ object KafkaBuild extends Build {
          <dependency org="org.eclipse.jetty" name="jetty-server" rev="8.0.4.v20111024">
          </dependency>
          <dependency org="org.eclipse.jetty" name="jetty-servlet" rev="8.0.4.v20111024">
+         </dependency>
+         <dependency org="org.mongodb" name="mongo-java-driver" rev="2.11.3">
          </dependency>
        </dependencies>
   )
