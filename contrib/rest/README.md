@@ -49,7 +49,11 @@ Request will block till:
 Example response:
 
 ```json
-{"messages": [{"key": "key" , "value": {"a" : "b"}}, {"key": "key1" , "value": {"c" : "d"}}]}
+{"messages": [
+        {"key": "key", "value": {"a" : "b"}}, 
+        {"key": "key1", "value": {"c" : "d"}}
+     ]
+}
 ```
 
 Endpoint timeouts, consumer groups and auto commit parameters are configured for every endpoint individually. 
