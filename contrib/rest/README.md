@@ -3,8 +3,8 @@ Kafka rest endpoint
 
 Rationale
 ---------
-Kafka high level Producer and Consumer APIs are very hard to implement right.
-Rest endpoint gives access to native Scala high level consumer and producer high level clients.
+Kafka High level Producer and Consumer clients are very hard to implement right.
+Rest endpoint gives access to native Scala high level consumer and producer high level clients allowing non-JVM languages to use the features of the high level clients.
 
 
 Formats
