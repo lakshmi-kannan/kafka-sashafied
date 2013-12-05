@@ -7,10 +7,17 @@ Kafka high level Producer and Consumer APIs are very hard to implement right.
 Rest endpoint gives access to native Scala high level consumer and producer APIs.
 
 
+Formats
+--------
+
+Both consumer and producer endpoints accept both json and bson formats. 
+Submitted values are stored in bson.
+
+
 Producer Endpoint API
 ----------------------
 
-Producer endpoint accepts messages in batches in json or bson formats to the topic of choice.
+Producer endpoint accepts messages in batches to the topic of choice.
 
 ```bash
 curl -X POST -H "Content-Type: application/json"\
