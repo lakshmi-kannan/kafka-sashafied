@@ -1,4 +1,4 @@
-Kafka rest endpoint
+Kafka HTTP endpoint
 -------------------
 
 Rationale
