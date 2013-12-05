@@ -24,9 +24,10 @@ import org.bson.BSON
 import org.bson.BSONObject
 import org.bson.BasicBSONDecoder
 import org.bson.BasicBSONEncoder
+import org.bson.BasicBSONObject
 import org.bson.types.BasicBSONList
 
-class ProducerServlet(properties:Properties) extends HttpServlet
+class ProducerServlet(properties:Properties) extends HttpServlet with ReplyFormatter
 {
   val producer = new Producer[String, Array[Byte]](new ProducerConfig(properties))
   val logger = Logger.getLogger("kafka.rest.producer")
@@ -128,8 +129,8 @@ class ProducerServlet(properties:Properties) extends HttpServlet
     val data = new KeyedMessage[String, Array[Byte]](topic, "key", new Array[Byte](1))
     producer.send(messages:_*)
 
-    response.setContentType("application/json")
-    response.setStatus(HttpServletResponse.SC_OK)
-    response.getWriter().println("{\"hello\": \"world post\"}")
+    var obj = new BasicBSONObject()
+    obj.append("accepted", "OK")
+    replyWith(obj, request, response)
   }
 }

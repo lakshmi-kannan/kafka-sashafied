@@ -24,6 +24,7 @@ object RestServer
       var context = new ServletContextHandler(ServletContextHandler.SESSIONS)
 
       context.setContextPath("/")
+      context.setErrorHandler(new ServletErrorHandler())
       server.setHandler(context)
  
       context.addServlet(new ServletHolder(servlet),"/*")
