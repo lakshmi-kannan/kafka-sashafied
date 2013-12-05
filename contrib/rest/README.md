@@ -31,6 +31,8 @@ Endpoint can be configured to be sync or async. This endpoint can be accessed co
 Consumer Endpoint API
 ----------------------
 
+Endpoint is configured to consume from the particular topic/list of topics upon startup and this setting can not be provided on the request basis.
+
 Consumer endpoint uses long-polling to consume messages in batches in json or bson formats:
 
 Example request:
@@ -58,5 +60,4 @@ curl -X POST http://localhost:8091
 ```
 
 Access to consumer endpoint is serialized, so there should be one one client talking to one consumer endpoint.
-
 
