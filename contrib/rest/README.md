@@ -4,7 +4,7 @@ Kafka HTTP endpoint
 Rationale
 ---------
 Kafka High level Producer and Consumer clients are very hard to implement right.
-Rest endpoint gives access to native Scala high level consumer and producer high level clients allowing non-JVM languages to use the features of the high level clients.
+HTTP endpoint uses Scala high level consumer and producer client so non-JVM languages can use the features of the high level api.
 
 
 Formats
