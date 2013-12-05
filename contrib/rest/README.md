@@ -22,7 +22,7 @@ Producer endpoint accepts messages in batches to the topic:
 ```bash
 curl -X POST -H "Content-Type: application/json"\
              -d '{"messages": [{"key": "key", "value":{"val1":"hello"}}]}'\
-              http://localhost:8090/topics/messages
+              http://localhost:8090/topics/topic1
 ```
 
 Endpoint can be configured to be sync or async. This endpoint can be accessed concurrently by multiple clients.
