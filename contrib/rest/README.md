@@ -14,7 +14,7 @@ Producer endpoint accepts messages in batches in json or bson formats to the top
 
 ```bash
 curl -X POST -H "Content-Type: application/json"\
-             -d '{"messages": [{"key": "key", "value":{"val1":"hello"}}]}\
+             -d '{"messages": [{"key": "key", "value":{"val1":"hello"}}]}'\
               http://localhost:8090/topics/messages
 ```
 
