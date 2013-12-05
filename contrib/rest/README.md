@@ -4,20 +4,20 @@ Kafka rest endpoint
 Rationale
 ---------
 Kafka high level Producer and Consumer APIs are very hard to implement right.
-Rest endpoint gives access to native Scala high level consumer and producer APIs.
+Rest endpoint gives access to native Scala high level consumer and producer high level clients.
 
 
 Formats
 --------
 
-Both consumer and producer endpoints accept both json and bson formats. 
+Both consumer and producer endpoints accept/return values in json and bson formats. 
 Submitted values are stored in bson.
 
 
 Producer Endpoint API
 ----------------------
 
-Producer endpoint accepts messages in batches to the topic of choice.
+Producer endpoint accepts messages in batches to the topic:
 
 ```bash
 curl -X POST -H "Content-Type: application/json"\
@@ -25,7 +25,7 @@ curl -X POST -H "Content-Type: application/json"\
               http://localhost:8090/topics/messages
 ```
 
-Endpoint can be configured to be sync or asyncronous.
+Endpoint can be configured to be sync or async. This endpoint can be accessed concurrently by multiple clients.
 
 
 Consumer Endpoint API
@@ -41,7 +41,7 @@ curl -H "Accept:application/json" -v http://localhost:8091?batchSize=10
 
 Request will block till:
 
-* timeout occurs - in this case the messages consumed during the period will be returned
+* timeout occurs - in this case the messages consumed during the polling request will be returned (empty if no messages consumed)
 * the batch of 10 messages has been consumed.
 
 Example response:
@@ -50,12 +50,13 @@ Example response:
 {"messages": [{"key": "key" , "value": {"a" : "b"}}, {"key": "key1" , "value": {"c" : "d"}}]}
 ```
 
-Endpoint timeouts and consumer groups are configured for every endpoint. It is also possible to commit offsets
-explicitly by issuing POST request to the endpoint:
+Endpoint timeouts, consumer groups and auto commit parameters are configured for every endpoint individually. 
+It is also possible to commit offsets explicitly by issuing POST request to the endpoint in case if auto commit has been turned off:
 
 ```bash
 curl -X POST http://localhost:8091
 ```
 
-Access to consumer endpoint is serialized and there should be one client talking to one endpoint.
+Access to consumer endpoint is serialized, so there should be one one client talking to one consumer endpoint.
+
 
