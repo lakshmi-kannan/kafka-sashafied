@@ -25,6 +25,20 @@ curl -X POST -H "Content-Type: application/json"\
               http://localhost:8090/topics/topic1
 ```
 
+Here's the post format explained:
+
+```javascript
+{
+    // list of messages submitted to kafka
+    "messages": [{
+        "key": "hello", //kafka message key(optional)
+        "value": {"a": "b"} //kafka message value(required). 
+     }]
+}
+
+
+```
+
 Endpoint can be configured to be sync or async. This endpoint can be accessed concurrently by multiple clients.
 
 
